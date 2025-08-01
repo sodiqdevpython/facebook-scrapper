@@ -2,3 +2,8 @@ env
 results.json
 .vscode
 selenium_profile
+__pycache__/
+.idea/
+*.pyc
+*.pyo
+*.pyd
