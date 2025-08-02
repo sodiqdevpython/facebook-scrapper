@@ -19,9 +19,6 @@ options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option("useAutomationExtension", False)
 
-options.add_argument("--high-dpi-support=1")
-options.add_argument("--force-device-scale-factor=0.25")
-
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 profile_url = "https://www.facebook.com/profile.php?id=100077596606201"
