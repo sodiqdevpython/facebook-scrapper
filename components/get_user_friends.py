@@ -39,7 +39,6 @@ def get_friends_list(driver, url, limit=10):
             attempts = 0
             last_height = new_height
 
-    # Yig‘ilgan do‘stlar: profil rasmi ham qo‘shiladi
     friends = []
     for name, href in list(friends_data)[:limit]:
         try:

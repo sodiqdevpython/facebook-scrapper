@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from utils.parser import parse_facebook_date
+from components.api import save_and_send_post_data
 
 COMMENT_BTN = 'span[data-ad-rendering-role="comment_button"]'
 COMMENT_TEXT_BTN = 'span:contains("Comment")'  # "Comment" button
@@ -39,9 +40,9 @@ def save_to_json(post_data, profile_name="unknown_profile"):
         return None
 
 
-def get_profile_posts(driver, profile_url, max_posts=2,
+def get_profile_posts(driver, profile_url, max_posts=20,
                       scroll_px=300, pause=1.0,
-                      no_new_limit=5, max_steps=500):
+                      no_new_limit=5, max_steps=5000):
     driver.get(profile_url)
     processed_ids, no_new, step = set(), 0, 0
     posts_count = 0
@@ -104,9 +105,18 @@ def get_profile_posts(driver, profile_url, max_posts=2,
                         post_data['profile_url'] = profile_url
                         post_data['profile_name'] = profile_name
                         post_data['scraped_at'] = datetime.now().isoformat()
-                        saved_file = save_to_json(post_data, profile_name)
+
+                        # JSON ga saqlash VA API ga yuborish
+                        saved_file, api_result = save_and_send_post_data(post_data, profile_name)
+
                         if saved_file:
                             saved_posts.append(saved_file)
+
+                        if api_result:
+                            print(f"✓ Post #{posts_count} API ga muvaffaqiyatli yuborildi!")
+                        else:
+                            print(f"✗ Post #{posts_count} API ga yuborishda xatolik")
+
                         title = post_data.get('title', '')
                         if title and title not in recent_titles:
                             recent_titles.append(title)
@@ -237,7 +247,7 @@ def read_post_data(driver, post_number):
                 comments = target_div.find_elements(By.CSS_SELECTOR, 'div.x78zum5.xdt5ytf')
                 print(f"{len(comments)} ta comment topildi")
 
-                for i, comment in enumerate(comments[:50]): #! boshidagi 50 ta comment uchun
+                for i, comment in enumerate(comments[:50]):  # ! boshidagi 50 ta comment uchun
                     try:
                         comment_data = {}
 

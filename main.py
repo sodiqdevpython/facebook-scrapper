@@ -1,12 +1,11 @@
-import os, json
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-
+from components.api import send_profile_data, save_and_send_post_data
 from components.get_profile_info import get_profile_full_info
-from components.get_profile_posts import get_profile_posts_server_friendly
-from components.get_user_friends import get_friends_list
+from components.get_profile_posts import get_profile_posts
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 user_data_dir = os.path.join(BASE_DIR, "selenium_profile")
@@ -21,27 +20,27 @@ options.add_experimental_option("useAutomationExtension", False)
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-profile_url = "https://www.facebook.com/kunuznews"
+profile_url = "https://www.facebook.com/abror.muhtor.alij.2025"
 
-# data = get_profile_full_info(driver, profile_url)
+print("=== PROFIL MA'LUMOTLARI OLISH ===")
+# Profil ma'lumotlarini olish va API ga yuborish
+data = get_profile_full_info(driver, profile_url)
+profile_result = send_profile_data(data)
 
-# friends = get_friends_list(driver, profile_url)
+if profile_result:
+    print("✓ Profil ma'lumotlari muvaffaqiyatli API ga yuborildi!")
+else:
+    print("✗ Profil ma'lumotlarini API ga yuborishda xatolik")
 
-# friends olish uchun
-# print(json.dumps(friends, indent=4, ensure_ascii=False))
+print("\n=== POSTLAR OLISH ===")
+# Postlarni olish va API ga yuborish (har bir post avtomatik CDN va API ga yuboriladi)
+posts = get_profile_posts(driver, profile_url, max_posts=5)  # 5 ta post olish
 
-# umumiy data larni olish uchun
-# print(json.dumps(data, indent=4, ensure_ascii=False))
+print(f"\n=== YAKUNIY NATIJA ===")
+print(f"Profil yuborildi: {'✓' if profile_result else '✗'}")
+print(f"Postlar jarayoni yakunlandi")
 
-# profile_posts ni olish uchun
-get_profile_posts_server_friendly(driver, profile_url)
-
-# result = {
-#     'profile': data,
-#     'friends': friends,
-# }
-
-# print(json.dumps(result, indent=4, ensure_ascii=False))
-
-time.sleep(10000)
+# Brauzer yopish
+time.sleep(5)
 driver.quit()
+print("Brauzer yopildi.")

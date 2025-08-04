@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from utils.parser import parse_count_to_int
 from utils.selenium_utils import get_element_or_none
 from selenium.common.exceptions import NoSuchElementException
+from .get_user_friends import get_friends_list
 
 
 def get_banner_image_url(driver):
@@ -61,7 +62,12 @@ def get_profile_full_info(driver, profile_url):
 
     photo_albums = get_latest_photo_urls(driver, profile_url)
 
+    extra_data = get_overview(driver)
+
+    friends = get_friends_list(driver, profile_url)
+
     return {
+        "profile_url": profile_url,
         "full_name": full_name,
         "followers": followers,
         "following": following,
@@ -69,6 +75,8 @@ def get_profile_full_info(driver, profile_url):
         "avatar": avatar,
         "overview": overview,
         "photo_albums": photo_albums,
+        "extra_data": extra_data,
+        "friends": friends,
     }
 
 def get_latest_photo_urls(driver, url, limit=10):
