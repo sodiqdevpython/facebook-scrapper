@@ -5,7 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 from components.get_profile_info import get_profile_full_info
-from components.get_profile_posts import get_profile_posts
+from components.get_profile_posts import get_profile_posts_server_friendly
 from components.get_user_friends import get_friends_list
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -34,7 +34,7 @@ profile_url = "https://www.facebook.com/kunuznews"
 # print(json.dumps(data, indent=4, ensure_ascii=False))
 
 # profile_posts ni olish uchun
-get_profile_posts(driver, profile_url)
+get_profile_posts_server_friendly(driver, profile_url)
 
 # result = {
 #     'profile': data,
