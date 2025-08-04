@@ -21,7 +21,7 @@ options.add_experimental_option("useAutomationExtension", False)
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-profile_url = "https://www.facebook.com/profile.php?id=100077596606201"
+profile_url = "https://www.facebook.com/kunuznews"
 
 # data = get_profile_full_info(driver, profile_url)
 
