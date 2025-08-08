@@ -52,7 +52,15 @@ def get_profile_posts(driver, profile_url, max_posts=20,
 
     profile_name = profile_url.split('/')[-1] or profile_url.split('/')[-2]
 
-    print(f" Postlar yig'ilayabdi (max: {max_posts})")
+    # Agar max_posts <= 0 bo'lsa, barcha postlarni olish uchun limitlarni oshirish
+    if max_posts <= 0:
+        print("Count <= 0, BARCHA postlar yig'iladi (unlimited)")
+        max_posts = 99999  # Juda katta son
+        no_new_limit = 15  # Ko'proq urinish
+        max_steps = 20000  # Ko'proq scroll
+        print(f"Yangi limitlar: max_posts={max_posts}, no_new_limit={no_new_limit}, max_steps={max_steps}")
+    else:
+        print(f"Postlar yig'ilayabdi (max: {max_posts})")
 
     while step < max_steps and no_new < no_new_limit and posts_count < max_posts:
 
@@ -147,12 +155,23 @@ def get_profile_posts(driver, profile_url, max_posts=20,
 
             if current_height >= max_height - 1500:
                 no_new += 1
-                print(f"Page tugaganga o'xshaydi {no_new}/{no_new_limit}")
+                if max_posts <= 0:
+                    print(f"Sahifa tugaganga o'xshaydi (unlimited mode) {no_new}/{no_new_limit}")
+                else:
+                    print(f"Page tugaganga o'xshaydi {no_new}/{no_new_limit}")
+
                 if no_new >= no_new_limit:
-                    print("\nSahifa to'liq tugadi")
+                    if max_posts <= 0:
+                        print(f"\nUnlimited mode: Sahifa to'liq tugadi, jami {posts_count} ta post olindi")
+                    else:
+                        print("\nSahifa to'liq tugadi")
                     break
             else:
-                print(f"Button topilmadi scroll qilinayabdi: ({scroll_px}px)")
+                if max_posts <= 0:
+                    print(
+                        f"Unlimited mode: Button topilmadi scroll qilinayabdi: ({scroll_px}px) - Step: {step}/{max_steps}")
+                else:
+                    print(f"Button topilmadi scroll qilinayabdi: ({scroll_px}px)")
 
         old_position = driver.execute_script("return window.pageYOffset")
         driver.execute_script(f"window.scrollBy(0, {scroll_px});")
@@ -167,7 +186,11 @@ def get_profile_posts(driver, profile_url, max_posts=20,
         step += 1
 
     # Xulosa
-    if posts_count >= max_posts:
+    if max_posts <= 0:
+        print(f"UNLIMITED MODE tugadi: Jami {posts_count} ta post olindi")
+        print(f"Steps ishlatildi: {step}/{max_steps}")
+        print(f"No new attempts: {no_new}/{no_new_limit}")
+    elif posts_count >= max_posts:
         print(f"Maksimal limitga yetdi {posts_count} ta post olindi")
     elif no_new >= no_new_limit:
         print(f"Jami: {posts_count} ta post olindi")
